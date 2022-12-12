@@ -5,6 +5,7 @@ import com.speedtest.util.FileDownloadUtil;
 import com.speedtest.util.FileUploadUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,9 +14,16 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
 @RestController
+@CrossOrigin("*")
 public class SpeedTestController {
 
     @GetMapping("/getValue")
@@ -48,25 +56,19 @@ public class SpeedTestController {
     }
 
     @GetMapping("/downloadFile/{fileCode}")
-    public ResponseEntity<?> downloadFile(@PathVariable("fileCode") String fileCode) {
+    public ResponseEntity<?> downloadFile(@PathVariable("fileCode") String fileCode) throws Exception {
         System.out.println("test");
-        Resource resource = null;
-        try {
-            resource = fileDownloadUtil.getFileAsResource(fileCode);
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError().build();
+        Path dirPath = Paths.get("Files-Upload");
+
+        Path filePath = dirPath.toAbsolutePath().normalize().resolve(fileCode);
+        if(!Files.exists(filePath)) {
+            throw new FileNotFoundException(fileCode + " was not found on the server");
         }
-
-        if (resource == null) {
-            return new ResponseEntity<>("File not found", HttpStatus.NOT_FOUND);
-        }
-
-        String contentType = "application/octet-stream";
-        String headerValue = "attachment; filename=\"" + resource.getFilename() + "\"";
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
-                .body(resource);
+        Resource resource = new UrlResource(filePath.toUri());
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("File-Name", fileCode);
+        httpHeaders.add(CONTENT_DISPOSITION, "attachment;File-Name=" + resource.getFilename());
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(Files.probeContentType(filePath)))
+                .headers(httpHeaders).body(resource);
     }
 }

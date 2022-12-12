@@ -17,7 +17,7 @@ public class SpeedtestApplication {
 		SpringApplication.run(SpeedtestApplication.class, args);
 	}
 
-	@Bean
+	/*@Bean
 	public CorsFilter corsFilter() {
 		UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
@@ -31,5 +31,5 @@ public class SpeedtestApplication {
 		corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 		urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
 		return new CorsFilter(urlBasedCorsConfigurationSource);
-	}
+	}*/
 }
