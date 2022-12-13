@@ -1,8 +1,25 @@
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+
+	dependencies {
+		classpath 'com.google.cloud.tools:appengine-gradle-plugin:2.4.4'
+	}
+}
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.6'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+
+	id 'com.google.cloud.tools.appengine' version '2.4.4'
 }
+apply plugin: 'com.google.cloud.tools.appengine'
+//apply plugin: 'appengine'
+def appEmail = "ddepakr@gmail.com"
+def appengineVersion = "1.9.59"
+
+
 
 group = 'com.speedtest'
 version = '0.0.1-SNAPSHOT'
@@ -16,6 +33,7 @@ configurations {
 
 repositories {
 	mavenCentral()
+
 }
 
 dependencies {
@@ -26,11 +44,29 @@ dependencies {
 	implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
 // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
 	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
-
+// https://mvnrepository.com/artifact/com.google.cloud.tools/appengine-gradle-plugin
+	//implementation group: 'com.google.cloud.tools', name: 'appengine-gradle-plugin', version: '2.4.5'
+	//appengineSdk "com.google.appengine:appengine-java-sdk:${appengineVersion}"
+	compileOnly "com.google.appengine:appengine-api-1.0-sdk:${appengineVersion}"
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
+/*appengine {
+	httpPort = 8888
+	downloadSdk = true
+	appcfg {
+		email = "${appEmail}"
+		noCookies = true
+		oauth2 = true
+	}
+}*/
+appengine {
+	deploy {
+		version = "GCLOUD_CONFIG"
+		projectId = "GCLOUD_CONFIG"
+	}
+}
 tasks.named('test') {
 	useJUnitPlatform()
 }

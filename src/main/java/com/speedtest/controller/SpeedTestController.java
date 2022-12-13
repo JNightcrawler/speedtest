@@ -44,13 +44,13 @@ public class SpeedTestController {
 
         String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
         long size = multipartFile.getSize();
-
-        String filecode = fileUploadUtil.saveFile(fileName, multipartFile);
+        System.out.println(size);
+      //  String filecode = fileUploadUtil.saveFile(fileName, multipartFile);
 
         FileUploadResponse response = new FileUploadResponse();
         response.setFileName(fileName);
         response.setSize(size);
-        response.setDownloadUri("/downloadFile/" + filecode);
+      //  response.setDownloadUri("/downloadFile/" + filecode);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
